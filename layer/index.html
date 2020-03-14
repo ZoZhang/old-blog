@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <title>jQuery Layer</title>
+ <meta http-equiv="X-UA-Compatible" content="IE=7">
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body{margin:0;padding:20px;font-size:16px;}
+ul,li{list-style-type:none;}
+pre{padding:0;margin:0;text-indent:0;}
+.fl {float:left;}
+.fr {float:right;}
+.cl {clear:both;}
+.ti20 {text-indent:20px;}
+.wrapLeft {width:auto;position:absolute;left:0;}
+.wrapRight {width:auto;position:relative;left:280px;}
+#layerAction ul li{cursor:pointer;text-align:center;padding:4px;}
+#layerAction ul li.active{background-color:#999999;color:#FFFFFF;}
+#layerContentLi span {background-color:#999;color:#FFF;padding:4px;cursor:pointer;}
+#layerContentLi ul li{display:none;text-align:left;line-height:25px;}
+</style>
+<script type="text/javascript" src="js/jquery.1.4.2.js"></script>
+<script type="text/javascript" src="js/jquery.zozhang.lib.js"></script>
+<script type="text/javascript">
+;(function($){
+ $(function(){
+    $('#layerAction span').unbind().bind('click',function(){
+				var liIndex  = $('#layerAction span').index(this);	
+				var liObject = $(this).parent();
+				var layerConLi = $('#layerContentLi li');
+				liObject.addClass('active').siblings().removeClass('active');
+				layerConLi.eq(liIndex).show().siblings().hide();
+				 switch (liIndex) {
+					case 1:
+						layerConLi.eq(1).find('span').unbind().bind('click',layerContent); 
+					break;
+					case 2:	
+						layerConLi.eq(2).find('span').unbind().bind('click',layerLoading);
+					break;
+				 }	
+		});
+
+    //default page show
+		$('#layerAction li:first span').click();
+
+		function layerLoading(){
+			$.createLayer({width:'20px',height:'auto'},function(){
+					 var contId	= '#'+settings.id,
+					     loadImg = '<img src="images/icon_loading.gif" alt=""/>';
+							 $(contId).html(loadImg).click(function(){
+									$.removeLayer(function(){
+										   alert('层关闭完成!!');
+									});
+							 });
+						});
+			}
+
+		function layerContent() {
+				$.createLayer({width:'200px',height:'200px'},function(){
+					var contId  = '#' + settings.id,
+							closeId = '#' + settings.closeId;
+          //content 
+					$(contId).css({backgroundColor:'#FFF',textAlign:'left'}).html('层创建后添加的内容区~');
+					//close btn styles
+					$(closeId).css({
+						width:'20px',
+						height:'20px',
+						textAlign:'center'
+						})
+						.html('X')
+						.hover(
+						function(){
+							$(this).css({color:'#F00'});
+						},
+						function(){
+							$(this).css({color:'#000'});
+						});
+			 });
+		}
+ });
+})(jQuery);
+</script>
+</head>
+<body>
+		<div id="layerAction" class="wrapLeft fl">
+		 <ul>
+			<li><span>插件介绍</span></li>
+			<li><span>层添加内容设置关闭按钮</span></li>
+			<li><span>层显添加图片并添加点击事件</span></li>
+		 </ul>
+		</div>
+		<div class="wrapRight fl">
+			<div  id="layerContentLi">
+				<ul>
+					<li class="ti20">这是我做的第一个jQuery插件，该插件主要功能是创建一个垂直/水平居中显示的层，会根据窗口大小改变而改变显示位置,<br/>支持回调,支持ie6,参数说明(以下为默认参数):
+<pre>
+id:'layerContent',	        //层内容区域的ID
+layerId:'layer',	        //层的ID
+closeId:'layerClose',		//层关闭区域的ID
+layerContId: 'layerContainer',  //包含层内容区域和关闭区域的ID
+layerOpacityId:'layerOpacity',  //遮罩层的ID
+width:500,			//层内容区域的宽度
+height:450,			//层内容区域的高度
+top:0,			        //算定义内容区域top值，为0则自动垂直居中
+opacity:'0.5',                  //遮罩层的透明度
+zIndex:1,                       //遮罩层的z-index值
+backgroundColor:'#333'          //遮罩层的背景颜色<br/>
+使用$.createLayer();可显示一个背景颜色为#333，透明度为50%的遮罩层;<br/>
+$.createLayer 和$.removeLayer回调使用试相同,使用settings.xx来调用上面的参数,具体使用实例请点击左边菜单:
+$.createLayer(function(){
+   alert(settings.width);
+});
+除了显示层之外，还有两个比较实用的方法setElementPosition和getPageInfo，第一个可以设置指定对象在浏览器垂直居中的位置，<br/>使用方法$('xxx').setElementPosition();<br/>
+$.getPageInfo()  返回一个由文档宽高和窗口宽高信息的数组，参数有pageWidth、pageHeight、windowWidth、windowHeight;
+						</pre>
+						</li>
+					<li>
+<pre>
+$.createLayer({width:'200px',height:'200px'},function(){
+	var contId  = '#' + settings.id,
+        closeId = '#' + settings.closeId;
+	//content 
+	$(contId).css({backgroundColor:'#FFF',textAlign:'left'}).html('层创建后添加的内容区~');
+	//close btn styles
+	$(closeId).css({
+		width:'20px',
+		height:'20px',
+		textAlign:'center'
+		})
+		.html('X')
+		.hover(
+		function(){
+			$(this).css({color:'#F00'});
+		},
+		function(){
+			$(this).css({color:'#000'});
+		});
+});
+</pre>
+创建一个宽200高200像素的层，创建完成后设置背景颜色为'#FFF'文字居左，并添加新内容到层里,设置层的关闭样式及移动事件;<br/>
+					
+					
+					Content 层显示内容添加关闭
+						<span>点击查看效果</span>
+					</li>  
+					<li>
+						<pre>
+	$.createLayer({width:'20px',height:'auto'},function() {
+		 var contId	= '#'+settings.id,
+				 loadImg = '&lt;img src="images/icon_loading.gif" alt=""/&gt;';
+				 $(contId).html(loadImg).click(function(){
+						$.removeLayer(function(){
+							  alert('层关闭完成!!');
+						});
+				 });
+		});
+						</pre>创建一个层并添加图片，在图片上添加点击事件并关闭层<span>点击查看效果</span></li>
+				</ul>
+			</div>
+		</div>
+</body>
+</html>
